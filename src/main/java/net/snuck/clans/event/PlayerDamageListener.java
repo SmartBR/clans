@@ -13,13 +13,15 @@ public class PlayerDamageListener implements Listener {
     public void on(EntityDamageByEntityEvent e) {
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
 
+            System.out.println("Os dois sao player");
+
             Player p = (Player) e.getDamager();
             Player target = (Player) e.getEntity();
 
             ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
             ClanPlayer targetCp = Main.getPlayerCache().get(target.getUniqueId().toString());
 
-            if(cp.getClan() == targetCp.getClan()) {
+            if(cp.getClanId().equals(targetCp.getClanId())) {
                 e.setCancelled(true);
             }
         }

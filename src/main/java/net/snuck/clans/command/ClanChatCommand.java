@@ -9,6 +9,8 @@ import net.snuck.clans.object.ClanPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class ClanChatCommand {
 
     @Command(name = "c",
@@ -31,10 +33,10 @@ public class ClanChatCommand {
         String fullMessage = String.join(" ", message);
 
         for(ClanPlayer member : CacheManager.getPlayersFromClan(cp.getClanId())) {
-            Player memberPlayer = Bukkit.getPlayer(member.getId());
+            Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
 
             if (memberPlayer != null) {
-                memberPlayer.sendMessage(String.format("§a%s[%s]§a: %s", p.getName(), cp.getRole().getChatPrefix(), fullMessage));
+                memberPlayer.sendMessage(String.format("§f%s§a%s§f: %s", p.getName(), cp.getRole().getChatPrefix(), fullMessage));
             }
         }
 

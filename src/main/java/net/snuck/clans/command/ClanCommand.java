@@ -181,6 +181,22 @@ public class ClanCommand {
             return;
         }
 
+        Main.getClanCache().remove(cp.getClanId());
+        cp.getClan().delete();
+
+        Main.getPlayerCache().forEach((id, cacheMember) -> {
+            cacheMember.setClan(null);
+            cacheMember.setClanId("");
+            cacheMember.setRole(Role.NO_CLAN);
+            cacheMember.save();
+
+            Player memberPlayer = Bukkit.getPlayer(UUID.fromString(cacheMember.getId()));
+
+            if(memberPlayer != null) {
+                memberPlayer.sendMessage("§cYour clan has been deleted.");
+            }
+        });
+
         for(ClanPlayer member : PlayerSQLManager.getAllPlayers(cp.getClanId())) {
             member.setClan(null);
             member.setClanId("");
@@ -188,17 +204,10 @@ public class ClanCommand {
             member.save();
         }
 
-        ClanSQLManager.deleteClanById(cp.getClanId());
-        Main.getClanCache().remove(cp.getClanId());
-
-        cp.getClan().delete();
-
         cp.setClan(null);
         cp.setClanId("");
         cp.setRole(Role.NO_CLAN);
         cp.save();
-
-        p.sendMessage("§aYour clan has been deleted.");
     }
 
     @Command(name = "clan.leave",

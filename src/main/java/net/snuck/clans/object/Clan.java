@@ -51,6 +51,7 @@ public class Clan {
             st = connection.prepareStatement("DELETE FROM clans WHERE id = ?");
             st.setString(1, this.id);
             st.executeUpdate();
+
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
