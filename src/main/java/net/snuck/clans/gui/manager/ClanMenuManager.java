@@ -165,7 +165,7 @@ public class ClanMenuManager {
             OutlinePane rolesPane = new OutlinePane(1, 2, 1, 1);
 
             ItemStack leatherRole = new ItemBuilder(Material.LEATHER_CHESTPLATE)
-                    .setName("§aRole permissions")
+                    .setName("§aRole permissions (soon)")
                     .setLore("§7Manage all permissions for specific roles.")
                     .addItemFlag(ItemFlag.HIDE_DYE, ItemFlag.HIDE_ATTRIBUTES)
                     .build();
