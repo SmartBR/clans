@@ -10,6 +10,20 @@ import java.sql.SQLException;
 
 public class ClanSQLManager {
 
+    public static void deleteClanById(String id) {
+        PreparedStatement st;
+        try {
+            Connection connection = Main.getiData().getConnection();
+            st = connection.prepareStatement("DELETE FROM clans WHERE id = ?");
+            st.setString(1, id);
+            st.executeUpdate();
+
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void insertClan(String id, String tag, String name) {
         PreparedStatement st;
         try {

@@ -188,14 +188,15 @@ public class ClanCommand {
             member.save();
         }
 
+        ClanSQLManager.deleteClanById(cp.getClanId());
+        Main.getClanCache().remove(cp.getClanId());
+
         cp.getClan().delete();
 
         cp.setClan(null);
         cp.setClanId("");
         cp.setRole(Role.NO_CLAN);
         cp.save();
-
-        Main.getClanCache().remove(cp.getClanId());
 
         p.sendMessage("§aYour clan has been deleted.");
     }
@@ -251,11 +252,11 @@ public class ClanCommand {
         Player p = ctx.getSender();
 
         p.sendMessage("§e/clan §f- shows the clan menu.");
-        p.sendMessage("§e/clan create <tag> <name> §f-creates a clan.");
-        p.sendMessage("§e/clan invite <player> §f-invites a player to your clan.");
-        p.sendMessage("§e/clan join <clan> §f-joins into a clan that you've been invited for.");
-        p.sendMessage("§e/clan leave §f-leaves from your current clan.");
-        p.sendMessage("§e/clan delete §f-deletes your clan, only for clan leaders.");
+        p.sendMessage("§e/clan create <tag> <name> §f- creates a clan.");
+        p.sendMessage("§e/clan invite <player> §f- invites a player to your clan.");
+        p.sendMessage("§e/clan join <clan> §f- joins into a clan that you've been invited for.");
+        p.sendMessage("§e/clan leave §f- leaves from your current clan.");
+        p.sendMessage("§e/clan delete §f- deletes your clan, only for clan leaders.");
     }
 
 
