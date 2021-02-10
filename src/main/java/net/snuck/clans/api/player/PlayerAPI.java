@@ -1,13 +1,10 @@
-package net.snuck.clans.api;
+package net.snuck.clans.api.player;
 
 import net.snuck.clans.Main;
 import net.snuck.clans.object.ClanPlayer;
 
-public class ClanAPI {
+public class PlayerAPI {
 
-    // TODO end hash and SQL api
-
-    // ClanPlayer
     public static void saveAllPlayers() {
         Main.getPlayerCache().forEach((id, cp) -> {
             cp.save();
@@ -30,5 +27,4 @@ public class ClanAPI {
         return Main.getPlayerCache().containsKey(playerId);
     }
 
-    // Clan
 }
