@@ -1,0 +1,6 @@
+name: Clans
+version: 1.0
+main: net.snuck.clans.Main
+api-version: 1.16
+authors: [ snuck ]
+depend: [Vault]
