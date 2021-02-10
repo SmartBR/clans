@@ -220,6 +220,11 @@ public class ClanCommand {
             return;
         }
 
+        if(cp.getRole() == Role.LEADER) {
+            p.sendMessage("§cYou can't leave from your own clan.");
+            return;
+        }
+
         for(ClanPlayer member : CacheManager.getPlayersFromClan(cp.getClanId())) {
             Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
 

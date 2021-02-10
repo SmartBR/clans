@@ -2,6 +2,7 @@ package net.snuck.clans;
 
 import me.saiintbrisson.bukkit.command.BukkitFrame;
 import net.milkbowl.vault.economy.Economy;
+import net.snuck.clans.command.ClanChatCommand;
 import net.snuck.clans.command.ClanCommand;
 import net.snuck.clans.database.*;
 import net.snuck.clans.database.manager.*;
@@ -57,6 +58,7 @@ public final class Main extends JavaPlugin {
         BukkitFrame frame = new BukkitFrame(getPlugin());
 
         frame.registerCommands(new ClanCommand());
+        frame.registerCommands(new ClanChatCommand());
 
 
         log.info(String.format("[%s] - Enabled version %s", getDescription().getName(), getDescription().getVersion()));
