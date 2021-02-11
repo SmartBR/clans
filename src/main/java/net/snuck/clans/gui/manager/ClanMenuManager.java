@@ -15,12 +15,12 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class ClanMenuManager {
@@ -35,21 +35,100 @@ public class ClanMenuManager {
 
         OutlinePane membersPane = new OutlinePane(1, 1, 4, 7, Pane.Priority.LOWEST);
 
-        for(ClanPlayer clanPlayer : PlayerSQLManager.getAllPlayers(cp.getClanId())) {
+        for(ClanPlayer member : PlayerSQLManager.getAllPlayers(cp.getClanId())) {
 
-            String playerId = clanPlayer.getId();
+            String playerId = member.getId();
 
-            OfflinePlayer clanPlayerBukkit = Bukkit.getOfflinePlayer(UUID.fromString(playerId));
+            OfflinePlayer memberPlayer = Bukkit.getOfflinePlayer(UUID.fromString(playerId));
 
             ItemStack playerHead = new ItemBuilder(Material.PLAYER_HEAD)
-                    .setName("§7" + clanPlayerBukkit.getName())
-                    .setLore("§7Role: §f" + clanPlayer.getRole().getName())
+                    .setName("§7" + memberPlayer.getName())
+                    .setLore("§7Role: §f" + member.getRole().getName(), "", "§7Left-click: §fpromote player", "§7Right-click: §fdemote player")
                     .build();
             SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
-            meta.setOwningPlayer(clanPlayerBukkit);
+            meta.setOwningPlayer(memberPlayer);
             playerHead.setItemMeta(meta);
 
-            membersPane.addItem(new GuiItem(playerHead));
+            GuiItem headItem = new GuiItem(playerHead, (e) -> {
+
+                if(e.getClick() == ClickType.LEFT) {
+                    // Promote
+
+                    if(cp.getRole() == Role.LEADER || cp.getRole() == Role.CAPTAIN) {
+
+                        if(cp.getRole().getPermissionIndex() < member.getRole().getPermissionIndex()) {
+                            player.closeInventory();
+                            player.sendMessage("§cThat player has a superior role.");
+                            return;
+                        }
+
+                        if(cp.getRole().getPermissionIndex() == member.getRole().getPermissionIndex() + 1) {
+                            player.closeInventory();
+                            player.sendMessage("§cYou can't promote this player.");
+                            return;
+                        }
+
+                        if(cp.getId().equals(member.getId())) {
+                            player.sendMessage("§cYou can't promote yourself.");
+                            return;
+                        }
+
+                        player.closeInventory();
+
+                        switch (member.getRole()) {
+                            case RECRUIT: {
+                                if(memberPlayer.isOnline()) {
+                                    ClanPlayer promoteTarget = Main.getPlayerCache().get(memberPlayer.getUniqueId().toString());
+                                    promoteTarget.setRole(Role.MEMBER);
+                                    promoteTarget.save();
+                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), promoteTarget.getRole().getName()));
+                                } else {
+                                    member.setRole(Role.MEMBER);
+                                    member.save();
+                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), member.getRole().getName()));
+                                }
+                                break;
+                            }
+                            case MEMBER: {
+                                if(memberPlayer.isOnline()) {
+                                    ClanPlayer promoteTarget = Main.getPlayerCache().get(memberPlayer.getUniqueId().toString());
+                                    promoteTarget.setRole(Role.CAPTAIN);
+                                    promoteTarget.save();
+                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), promoteTarget.getRole().getName()));
+                                } else {
+                                    member.setRole(Role.CAPTAIN);
+                                    member.save();
+                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), member.getRole().getName()));
+                                }
+                                break;
+                            }
+                            case CAPTAIN: {
+                                if(memberPlayer.isOnline()) {
+                                    ClanPlayer promoteTarget = Main.getPlayerCache().get(memberPlayer.getUniqueId().toString());
+                                    promoteTarget.setRole(Role.LEADER);
+                                    promoteTarget.save();
+                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), promoteTarget.getRole().getName()));
+                                } else {
+                                    member.setRole(Role.LEADER);
+                                    member.save();
+                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), member.getRole().getName()));
+                                }
+                                break;
+                            }
+                            case LEADER: {
+                                player.sendMessage("§cThis player is in the highest role.");
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+            });
+
+            membersPane.addItem(headItem);
         }
 
         gui.addPane(membersPane);
@@ -118,12 +197,6 @@ public class ClanMenuManager {
 
             ChestGui gui = new ChestGui(5, String.format("[%s] %s", cp.getClan().getTag(), cp.getClan().getName()));
             gui.setOnGlobalClick((e) -> e.setCancelled(true));
-
-            OutlinePane bg = new OutlinePane(0, 0, 9, 5, Pane.Priority.LOWEST);
-            bg.addItem(new GuiItem(new ItemBuilder(Material.GLASS_PANE).build()));
-            bg.setRepeat(true);
-
-            gui.addPane(bg);
 
             ItemStack clanInfo = new ItemBuilder(Material.WRITABLE_BOOK)
                     .setName("§aClan information")
@@ -194,13 +267,6 @@ public class ClanMenuManager {
             ChestGui noClanGui = new ChestGui(3, player.getName());
             noClanGui.setOnGlobalClick((e) -> e.setCancelled(true));
 
-            OutlinePane bg = new OutlinePane(0, 0, 9, 3, Pane.Priority.LOWEST);
-            bg.addItem(new GuiItem(new ItemBuilder(Material.GLASS_PANE).build()));
-            bg.setRepeat(true);
-
-            noClanGui.addPane(bg);
-
-
             ItemStack createClan = new ItemBuilder(Material.PAPER)
                     .setName("§aCreate a clan")
                     .setLore("§7Click here to create a clan.")
@@ -212,7 +278,6 @@ public class ClanMenuManager {
                 e.getWhoClicked().closeInventory();
                 player.sendMessage("§cYou can create a clan by typing §e/clan create <tag> <name>§c.");
             }));
-
             noClanGui.addPane(menu);
 
             noClanGui.show(player);

@@ -101,6 +101,11 @@ public class ClanCommand {
 
         ClanPlayer targetCp = Main.getPlayerCache().get(target.getUniqueId().toString());
 
+        if(targetCp.hasInviteForClan(senderCp.getClanId())) {
+            p.sendMessage("§cThis player has already invited to join your clan, you can ask him to join.");
+            return;
+        }
+
         Invite invite = new Invite(targetCp, senderCp.getClan());
         invite.save();
 

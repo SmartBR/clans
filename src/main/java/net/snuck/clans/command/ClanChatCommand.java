@@ -36,7 +36,7 @@ public class ClanChatCommand {
             Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
 
             if (memberPlayer != null) {
-                memberPlayer.sendMessage(String.format("§f%s§a%s§f: %s", p.getName(), cp.getRole().getChatPrefix(), fullMessage));
+                memberPlayer.sendMessage(String.format("§f[§a%s§f] %s: %s", cp.getRole().getChatPrefix(), p.getName(), fullMessage));
             }
         }
 
