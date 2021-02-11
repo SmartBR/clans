@@ -55,35 +55,6 @@ public class CacheManager {
         }
     }
 
-    public static void loadInvitesCache() {
-        PreparedStatement st;
-        try {
-            Connection connection = Main.getiData().getConnection();
-            st = connection.prepareStatement("SELECT * FROM invites");
-
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                ClanPlayer cp = Main.getPlayerCache().get(rs.getString("player_id"));
-                Clan clan = Main.getClanCache().get(rs.getString("clan_id"));
-
-                Main.getInviteCache().put(cp, new Invite(cp, clan));
-            }
-
-            st.close();
-            rs.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void saveInvitesCache() {
-        Main.getInviteCache().forEach(((clanPlayer, invite) -> {
-            invite.save();
-        }));
-    }
-
     public static List<ClanPlayer> getPlayersFromClan(String clanId) {
 
         List<ClanPlayer> list = new ArrayList<>();

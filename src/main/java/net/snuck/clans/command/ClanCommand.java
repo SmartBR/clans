@@ -12,6 +12,8 @@ import net.snuck.clans.type.Role;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 public class ClanCommand {
@@ -101,6 +103,11 @@ public class ClanCommand {
 
         ClanPlayer targetCp = Main.getPlayerCache().get(target.getUniqueId().toString());
 
+        if(targetCp.getClanId().equals(senderCp.getClanId())) {
+            p.sendMessage(String.format("§cOops! Looks like §f%s §cis already in your clan.", target.getName()));
+            return;
+        }
+
         if(targetCp.hasInviteForClan(senderCp.getClanId())) {
             p.sendMessage("§cThis player has already invited to join your clan, you can ask him to join.");
             return;
@@ -108,8 +115,6 @@ public class ClanCommand {
 
         Invite invite = new Invite(targetCp, senderCp.getClan());
         invite.save();
-
-        Main.getInviteCache().put(targetCp, invite);
 
         p.sendMessage(String.format("§f%s §awas successfully invited to your clan!", target.getName()));
 
@@ -145,7 +150,6 @@ public class ClanCommand {
                 cp.save();
 
                 InviteSQLManager.removeInvite(p.getUniqueId().toString(), invited.getId());
-                Main.getInviteCache().remove(cp);
 
                 p.sendMessage(String.format("§aSuccessfully joined in the §f[%s] %s §aclan.", invited.getTag(), invited.getName()));
 
@@ -164,6 +168,29 @@ public class ClanCommand {
             p.sendMessage("§cOops! Looks like this clan don't exists.");
         }
 
+    }
+
+    @Command(name = "clan.decline",
+            target = CommandTarget.PLAYER,
+            permission = "clans.decline",
+            usage = "clan decline <clan>",
+            description = "Declines an invite of a clan."
+    )
+    public void handleDeclineCommand(Context<Player> ctx, String clanName) {
+        Player p = ctx.getSender();
+        ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
+
+        Clan clan = ClanSQLManager.getClanByName(clanName);
+        if (clan != null) {
+            if(cp.hasInviteForClan(clan.getId())) {
+                InviteSQLManager.removeInvite(p.getUniqueId().toString(), clan.getId());
+                p.sendMessage(String.format("§cYou declined the invite from the clan §f[%s] %s§c.", clan.getTag(), clan.getName()));
+            } else {
+                p.sendMessage("§cYou don't have an invite for this clan.");
+            }
+        } else {
+            p.sendMessage("§cOops! Looks like this clan don't exists.");
+        }
     }
 
     @Command(name = "clan.delete",
@@ -269,6 +296,7 @@ public class ClanCommand {
         p.sendMessage("§e/clan create <tag> <name> §f- creates a clan.");
         p.sendMessage("§e/clan invite <player> §f- invites a player to your clan.");
         p.sendMessage("§e/clan join <clan> §f- joins into a clan that you've been invited for.");
+        p.sendMessage("§e/clan decline <clan> §f- declines an invite of a clan.");
         p.sendMessage("§e/clan leave §f- leaves from your current clan.");
         p.sendMessage("§e/clan delete §f- deletes your clan, only for clan leaders.");
     }

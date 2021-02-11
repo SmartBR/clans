@@ -6,6 +6,7 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.snuck.clans.Main;
 import net.snuck.clans.database.manager.CacheManager;
 import net.snuck.clans.object.ClanPlayer;
+import net.snuck.clans.type.Role;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -27,6 +28,11 @@ public class ClanChatCommand {
 
         if(!cp.hasClan()) {
             p.sendMessage("§cOops! Looks like you don't have a clan.");
+            return;
+        }
+
+        if(cp.getRole() == Role.RECRUIT) {
+            p.sendMessage("§cOnly members and up can type in the clan chat.");
             return;
         }
 

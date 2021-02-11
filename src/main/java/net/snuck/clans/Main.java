@@ -28,7 +28,6 @@ public final class Main extends JavaPlugin {
 
     private static final HashMap<String, ClanPlayer> playerCache = new HashMap<>();
     private static final HashMap<String, Clan> clanCache = new HashMap<>();
-    private static final HashMap<ClanPlayer, Invite> inviteCache = new HashMap<>();
 
     private static final Logger log = Logger.getLogger("Minecraft");
 
@@ -54,7 +53,6 @@ public final class Main extends JavaPlugin {
 
         CacheManager.loadUsersCache();
         CacheManager.loadClansCache();
-        CacheManager.loadInvitesCache();
 
         BukkitFrame frame = new BukkitFrame(getPlugin());
 
@@ -98,7 +96,6 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         CacheManager.saveUsersCache();
         CacheManager.saveClansCache();
-        CacheManager.saveInvitesCache();
 
         iData.close();
         HandlerList.unregisterAll();
@@ -136,9 +133,5 @@ public final class Main extends JavaPlugin {
 
     public static HashMap<String, Clan> getClanCache() {
         return clanCache;
-    }
-
-    public static HashMap<ClanPlayer, Invite> getInviteCache() {
-        return inviteCache;
     }
 }
