@@ -9,6 +9,7 @@ import net.snuck.clans.database.manager.*;
 import net.snuck.clans.gui.manager.ClanMenuManager;
 import net.snuck.clans.object.*;
 import net.snuck.clans.type.Role;
+import net.snuck.clans.util.ClanUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -203,43 +204,7 @@ public class ClanCommand {
         Player p = ctx.getSender();
         ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
 
-        if(!cp.hasClan()) {
-            p.sendMessage("§cOops! Looks like you don't have a clan.");
-            return;
-        }
-
-        if(cp.getRole() != Role.LEADER) {
-            p.sendMessage("§cOnly clan leader can execute this command.");
-            return;
-        }
-
-        Main.getClanCache().remove(cp.getClanId());
-        cp.getClan().delete();
-
-        Main.getPlayerCache().forEach((id, cacheMember) -> {
-            cacheMember.setClan(null);
-            cacheMember.setClanId("");
-            cacheMember.setRole(Role.NO_CLAN);
-            cacheMember.save();
-
-            Player memberPlayer = Bukkit.getPlayer(UUID.fromString(cacheMember.getId()));
-
-            if(memberPlayer != null) {
-                memberPlayer.sendMessage("§cYour clan has been deleted.");
-            }
-        });
-
-        for(ClanPlayer member : PlayerSQLManager.getAllPlayers(cp.getClanId())) {
-            member.setClan(null);
-            member.setClanId("");
-            member.setRole(Role.NO_CLAN);
-            member.save();
-        }
-
-        cp.setClan(null);
-        cp.setClanId("");
-        cp.setRole(Role.NO_CLAN);
-        cp.save();
+        ClanUtil.deleteClan(p, cp);
     }
 
     @Command(name = "clan.leave",
@@ -250,37 +215,8 @@ public class ClanCommand {
             description = "Exit from your current clan."
     )
     public void handleExitCommand(Context<Player> ctx) {
-
         Player p = ctx.getSender();
-        ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
-
-        String clanName = cp.getClan().getName();
-        String clanTag = cp.getClan().getTag();
-
-        if(!cp.hasClan()) {
-            p.sendMessage("§cOops! Looks like you don't have a clan yet.");
-            return;
-        }
-
-        if(cp.getRole() == Role.LEADER) {
-            p.sendMessage("§cYou can't leave from your own clan.");
-            return;
-        }
-
-        for(ClanPlayer member : CacheManager.getPlayersFromClan(cp.getClanId())) {
-            Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
-
-            if (memberPlayer != null) {
-                memberPlayer.sendMessage(String.format("§f%s §cleft from your clan.", p.getName()));
-            }
-        }
-
-        cp.setClan(null);
-        cp.setClanId("");
-        cp.setRole(Role.NO_CLAN);
-        cp.save();
-
-        p.sendMessage(String.format("§cYou left from §f[%s] %s§c.", clanTag, clanName));
+        ClanUtil.exitClan(p, Main.getPlayerCache().get(p.getUniqueId().toString()));
     }
 
     @Command(name = "clan.help",

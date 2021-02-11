@@ -10,20 +10,46 @@ import net.snuck.clans.database.manager.CacheManager;
 import net.snuck.clans.database.manager.PlayerSQLManager;
 import net.snuck.clans.object.ClanPlayer;
 import net.snuck.clans.type.Role;
+import net.snuck.clans.util.ChatAsker;
+import net.snuck.clans.util.ClanUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.UUID;
 
 public class ClanMenuManager {
+
+    private static final ChatAsker DISBAND_ASKER = ChatAsker.builder()
+            .messages("", "§cAre you sure you want to disband your clan?", "  §7Type §cyes §7to confirm and §ccancel §7to cancel.")
+            .onComplete((p, message) -> {
+
+                if(message.equalsIgnoreCase("cancel")) {
+                    p.sendMessage("§aClan disband cancelled.");
+                    return;
+                }
+                if(message.equalsIgnoreCase("yes")) {
+                    ClanUtil.deleteClan(p, Main.getPlayerCache().get(p.getUniqueId().toString()));
+                }
+
+            }).build();
+
+    private static final ChatAsker LEAVE_ASKER = ChatAsker.builder()
+            .messages("", "§cAre you sure you want to leave from your clan?", "  §7Type §cyes §7to confirm and §ccancel §7to cancel.")
+            .onComplete((p, message) -> {
+
+                if(message.equalsIgnoreCase("cancel")) {
+                    p.sendMessage("§aClan disband cancelled.");
+                    return;
+                }
+                if(message.equalsIgnoreCase("yes")) {
+                    ClanUtil.exitClan(p, Main.getPlayerCache().get(p.getUniqueId().toString()));
+                }
+            }).build();
 
     // TODO add elevated operations like kicking players here.
     public static void openElevatedMembersMenu(Player player) {
@@ -235,20 +261,31 @@ public class ClanMenuManager {
 
             gui.addPane(menu);
 
-            OutlinePane rolesPane = new OutlinePane(1, 2, 1, 1);
+            OutlinePane exitOrDisbandPane = new OutlinePane(1, 3, 1, 1);
 
-            ItemStack leatherRole = new ItemBuilder(Material.LEATHER_CHESTPLATE)
-                    .setName("§aRole permissions (soon)")
-                    .setLore("§7Manage all permissions for specific roles.")
-                    .addItemFlag(ItemFlag.HIDE_DYE, ItemFlag.HIDE_ATTRIBUTES)
+            ItemStack disbandStack = new ItemBuilder(Material.DARK_OAK_DOOR)
+                    .setName("§cDisband clan")
+                    .setLore("§7Click here to disband your clan.")
                     .build();
-            LeatherArmorMeta leatherArmorMeta = (LeatherArmorMeta) leatherRole.getItemMeta();
-            leatherArmorMeta.setColor(Color.GREEN);
-            leatherRole.setItemMeta(leatherArmorMeta);
 
-            rolesPane.addItem(new GuiItem(leatherRole));
+            ItemStack exitStack = new ItemBuilder(Material.DARK_OAK_DOOR)
+                    .setName("§cExit clan")
+                    .setLore("§7Click here to exit from your clan.")
+                    .build();
 
-            gui.addPane(rolesPane);
+            GuiItem disbandItem = new GuiItem(disbandStack, (e) -> {
+                player.closeInventory();
+                DISBAND_ASKER.addPlayer(player);
+            });
+
+            GuiItem exitItem = new GuiItem(exitStack, (e) -> {
+                player.closeInventory();
+                LEAVE_ASKER.addPlayer(player);
+            });
+
+            exitOrDisbandPane.addItem(cp.getRole().getPermissionIndex() == 3 ? disbandItem : exitItem);
+
+            gui.addPane(exitOrDisbandPane);
 
             OutlinePane rankingPane = new OutlinePane(7, 1, 1, 1);
 
