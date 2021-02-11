@@ -9,6 +9,7 @@ import net.snuck.clans.database.manager.*;
 import net.snuck.clans.event.PlayerDamageListener;
 import net.snuck.clans.event.PlayerJoinListener;
 import net.snuck.clans.event.PlayerLeftListener;
+import net.snuck.clans.hook.ClanExpansion;
 import net.snuck.clans.object.*;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -59,6 +60,9 @@ public final class Main extends JavaPlugin {
         frame.registerCommands(new ClanCommand());
         frame.registerCommands(new ClanChatCommand());
 
+        if(pm.getPlugin("PlaceholderAPI") != null) {
+            new ClanExpansion().register();
+        }
 
         log.info(String.format("[%s] - Enabled version %s", getDescription().getName(), getDescription().getVersion()));
     }
