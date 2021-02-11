@@ -1,2 +1,2 @@
 # clans
-Clans plugin for selling in SpigotMC.org
+Clans plugin for publishing in SpigotMC.org

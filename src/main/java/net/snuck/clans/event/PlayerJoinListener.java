@@ -23,8 +23,6 @@ public class PlayerJoinListener implements Listener {
 
         if(!(Main.getPlayerCache().containsKey(uuid.toString()))) {
             Main.getPlayerCache().put(uuid.toString(), PlayerSQLManager.getPlayer(uuid.toString()));
-
-            System.out.println(Main.getPlayerCache().get(uuid.toString()).toString());
         }
     }
 
