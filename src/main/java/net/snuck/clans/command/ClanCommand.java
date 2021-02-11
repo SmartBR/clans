@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ClanCommand {
 
@@ -52,13 +54,31 @@ public class ClanCommand {
                 return;
             }
 
-            if (clanTag.length() > 3) {
-                p.sendMessage("§cThe clan tag is too long, the characters limit is 3.");
+            if (clanTag.length() != 3) {
+                p.sendMessage("§cThe clan tag needs to be 3 characters long.");
+                return;
+            }
+
+            Pattern tagPattern = Pattern.compile("[^a-zA-Z0-9 ]", Pattern.CASE_INSENSITIVE);
+            Matcher m = tagPattern.matcher(clanTag);
+            boolean tagFound = m.find();
+
+            if(tagFound) {
+                p.sendMessage("§cThe clan tag can't contain any special character.");
+                return;
+            }
+
+            Pattern namePattern = Pattern.compile("[^a-zA-Z0-9 ]", Pattern.CASE_INSENSITIVE);
+            Matcher nameMatcher = namePattern.matcher(clanName);
+            boolean nameFound = nameMatcher.find();
+
+            if(nameFound) {
+                p.sendMessage("§cThe clan name can't contain any special character.");
                 return;
             }
 
             String clanId = UUID.randomUUID().toString();
-            Clan clan = new Clan(clanId, clanTag, clanName);
+            Clan clan = new Clan(clanId, clanTag.toUpperCase(), clanName);
 
             Main.getClanCache().put(clanId, clan);
             cp.setClanId(clanId);
