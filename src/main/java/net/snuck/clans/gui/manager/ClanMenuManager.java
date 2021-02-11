@@ -12,6 +12,7 @@ import net.snuck.clans.object.ClanPlayer;
 import net.snuck.clans.type.Role;
 import net.snuck.clans.util.ChatAsker;
 import net.snuck.clans.util.ClanUtil;
+import net.snuck.clans.util.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -78,78 +79,10 @@ public class ClanMenuManager {
             GuiItem headItem = new GuiItem(playerHead, (e) -> {
 
                 if(e.getClick() == ClickType.LEFT) {
-                    // Promote
-
-                    if(cp.getRole() == Role.LEADER || cp.getRole() == Role.CAPTAIN) {
-
-                        if(cp.getRole().getPermissionIndex() < member.getRole().getPermissionIndex()) {
-                            player.closeInventory();
-                            player.sendMessage("§cThat player has a superior role.");
-                            return;
-                        }
-
-                        if(cp.getRole().getPermissionIndex() == member.getRole().getPermissionIndex() + 1) {
-                            player.closeInventory();
-                            player.sendMessage("§cYou can't promote this player.");
-                            return;
-                        }
-
-                        if(cp.getId().equals(member.getId())) {
-                            player.sendMessage("§cYou can't promote yourself.");
-                            return;
-                        }
-
-                        player.closeInventory();
-
-                        switch (member.getRole()) {
-                            case RECRUIT: {
-                                if(memberPlayer.isOnline()) {
-                                    ClanPlayer promoteTarget = Main.getPlayerCache().get(memberPlayer.getUniqueId().toString());
-                                    promoteTarget.setRole(Role.MEMBER);
-                                    promoteTarget.save();
-                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), promoteTarget.getRole().getName()));
-                                } else {
-                                    member.setRole(Role.MEMBER);
-                                    member.save();
-                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), member.getRole().getName()));
-                                }
-                                break;
-                            }
-                            case MEMBER: {
-                                if(memberPlayer.isOnline()) {
-                                    ClanPlayer promoteTarget = Main.getPlayerCache().get(memberPlayer.getUniqueId().toString());
-                                    promoteTarget.setRole(Role.CAPTAIN);
-                                    promoteTarget.save();
-                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), promoteTarget.getRole().getName()));
-                                } else {
-                                    member.setRole(Role.CAPTAIN);
-                                    member.save();
-                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), member.getRole().getName()));
-                                }
-                                break;
-                            }
-                            case CAPTAIN: {
-                                if(memberPlayer.isOnline()) {
-                                    ClanPlayer promoteTarget = Main.getPlayerCache().get(memberPlayer.getUniqueId().toString());
-                                    promoteTarget.setRole(Role.LEADER);
-                                    promoteTarget.save();
-                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), promoteTarget.getRole().getName()));
-                                } else {
-                                    member.setRole(Role.LEADER);
-                                    member.save();
-                                    player.sendMessage(String.format("§aSuccessfully promoted §f%s §ato §f%s§a.", memberPlayer.getName(), member.getRole().getName()));
-                                }
-                                break;
-                            }
-                            case LEADER: {
-                                player.sendMessage("§cThis player is in the highest role.");
-                            }
-                            default: {
-                                break;
-                            }
-                        }
-                    }
-
+                    // PlayerUtil class handle all conditional structures.
+                    PlayerUtil.promote(player, member);
+                } else if(e.getClick() == ClickType.RIGHT) {
+                    PlayerUtil.demote(player, member);
                 }
 
             });
