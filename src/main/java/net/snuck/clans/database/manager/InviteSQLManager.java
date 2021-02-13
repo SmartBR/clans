@@ -13,7 +13,7 @@ public class InviteSQLManager {
     public static void insertInvite(Invite invite) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("INSERT INTO invites (player_id, clan_id) VALUES (?, ?)");
             st.setString(1, invite.getReceiver().getId());
             st.setString(2, invite.getInvitedTo().getId());
@@ -28,7 +28,7 @@ public class InviteSQLManager {
     public static void removeInvite(String playerId, String clanId) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("DELETE FROM invites WHERE player_id = ? AND clan_id = ?");
             st.setString(1, playerId);
             st.setString(2, clanId);
@@ -43,7 +43,7 @@ public class InviteSQLManager {
     public static boolean hasInvite(Invite invite) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM invites WHERE player_id = ? AND clan_id = ?");
             st.setString(1, invite.getReceiver().getId());
             st.setString(2, invite.getInvitedTo().getId());

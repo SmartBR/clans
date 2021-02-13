@@ -13,7 +13,7 @@ public class ClanSQLManager {
     public static void deleteClanById(String id) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("DELETE FROM clans WHERE id = ?");
             st.setString(1, id);
             st.executeUpdate();
@@ -28,7 +28,7 @@ public class ClanSQLManager {
         PreparedStatement st;
         try {
 
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("INSERT INTO clans (id, tag, name) VALUES (?, ?, ?)");
             st.setString(1, id);
             st.setString(2, tag);
@@ -44,7 +44,7 @@ public class ClanSQLManager {
     public static Clan getClanByName(String clanName) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM clans WHERE name = ?");
             st.setString(1, clanName);
 
@@ -66,7 +66,7 @@ public class ClanSQLManager {
     public static Clan getClanById(String clanId) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM clans WHERE id = ?");
             st.setString(1, clanId);
 
@@ -88,7 +88,7 @@ public class ClanSQLManager {
     public static boolean hasClan(String clanId) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT id FROM clans WHERE id = ?");
             st.setString(1, clanId);
 
@@ -109,7 +109,7 @@ public class ClanSQLManager {
     public static boolean hasClanWithName(String name) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT name FROM clans WHERE name = ?");
             st.setString(1, name);
 
@@ -130,7 +130,7 @@ public class ClanSQLManager {
     public static boolean hasClanWithTag(String tag) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT tag FROM clans WHERE tag = ?");
             st.setString(1, tag);
 

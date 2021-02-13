@@ -18,7 +18,7 @@ public class PlayerSQLManager {
 
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT uuid FROM users WHERE uuid = ?");
             st.setString(1, playerId);
 
@@ -39,7 +39,7 @@ public class PlayerSQLManager {
     public static void insertPlayer(String playerId, String clanId, Role role) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("INSERT INTO users (uuid, clan_id, role) VALUES (?, ?, ?)");
             st.setString(1, playerId);
             st.setString(2, clanId);
@@ -54,7 +54,7 @@ public class PlayerSQLManager {
     public static void deletePlayer(String playerId) {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("DELETE FROM users WHERE uuid = ?");
             st.setString(1, playerId);
             st.executeUpdate();
@@ -70,7 +70,7 @@ public class PlayerSQLManager {
         List<ClanPlayer> result = new ArrayList<>();
 
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM users WHERE clan_id = ?");
             st.setString(1, clanId);
 
@@ -99,7 +99,7 @@ public class PlayerSQLManager {
         PreparedStatement st;
 
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM users WHERE uuid = ?");
             st.setString(1, playerId);
             ResultSet rs = st.executeQuery();
@@ -123,7 +123,7 @@ public class PlayerSQLManager {
 
     public static void createTable(String table, String columns) {
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             PreparedStatement st = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + table + "` (" + columns + ")");
             st.executeUpdate();
             st.close();

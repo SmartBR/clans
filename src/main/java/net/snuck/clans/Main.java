@@ -1,5 +1,6 @@
 package net.snuck.clans;
 
+import lombok.Getter;
 import me.saiintbrisson.bukkit.command.BukkitFrame;
 import net.milkbowl.vault.economy.Economy;
 import net.snuck.clans.command.ClanChatCommand;
@@ -16,21 +17,20 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 public final class Main extends JavaPlugin {
 
-    private static Main plugin;
-    private static IData iData;
-    private static Economy econ = null;
-    private static PluginManager pm;
+    @Getter private static Main plugin;
+    @Getter private static IData iData;
+    @Getter private static Economy econ = null;
+    @Getter private static PluginManager pm;
 
-    private static final HashMap<String, ClanPlayer> playerCache = new HashMap<>();
-    private static final HashMap<String, Clan> clanCache = new HashMap<>();
+    @Getter private static final HashMap<String, ClanPlayer> playerCache = new HashMap<>();
+    @Getter private static final HashMap<String, Clan> clanCache = new HashMap<>();
 
-    private static final Logger log = Logger.getLogger("Minecraft");
+    @Getter private static final Logger log = Logger.getLogger("Minecraft");
 
     @Override
     public void onEnable() {
@@ -117,25 +117,5 @@ public final class Main extends JavaPlugin {
         }
         econ = rsp.getProvider();
         return econ != null;
-    }
-
-    public static Main getPlugin() {
-        return plugin;
-    }
-
-    public static IData getiData() {
-        return iData;
-    }
-
-    public static Economy getEcon() {
-        return econ;
-    }
-
-    public static HashMap<String, ClanPlayer> getPlayerCache() {
-        return playerCache;
-    }
-
-    public static HashMap<String, Clan> getClanCache() {
-        return clanCache;
     }
 }

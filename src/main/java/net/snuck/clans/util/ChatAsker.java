@@ -1,5 +1,6 @@
 package net.snuck.clans.util;
 
+import lombok.Data;
 import net.snuck.clans.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
 
+@Data
 public class ChatAsker {
 
     private final static WeakHashMap<Player, ChatAsker> askers = new WeakHashMap<>();
@@ -50,14 +52,6 @@ public class ChatAsker {
     public void addPlayer(Player player) {
         askers.put(player, this);
         player.sendMessage(messages);
-    }
-
-    public BiConsumer<Player, String> getOnComplete() {
-        return onComplete;
-    }
-
-    public String[] getMessages() {
-        return messages;
     }
 
     public static Builder builder() {

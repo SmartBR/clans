@@ -1,32 +1,14 @@
 package net.snuck.clans.object;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.snuck.clans.database.manager.InviteSQLManager;
 
+@AllArgsConstructor @Data
 public class Invite {
 
     private ClanPlayer receiver;
     private Clan invitedTo;
-
-    public Invite(ClanPlayer receiver, Clan invitedTo) {
-        this.receiver = receiver;
-        this.invitedTo = invitedTo;
-    }
-
-    public ClanPlayer getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(ClanPlayer receiver) {
-        this.receiver = receiver;
-    }
-
-    public Clan getInvitedTo() {
-        return invitedTo;
-    }
-
-    public void setInvitedTo(Clan invitedTo) {
-        this.invitedTo = invitedTo;
-    }
 
     public void save() {
         if(!InviteSQLManager.hasInvite(this)) {
