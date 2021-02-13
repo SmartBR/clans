@@ -1,5 +1,7 @@
 package net.snuck.clans.type;
 
+import lombok.Getter;
+
 public enum Role {
 
     LEADER("Leader", "L", 3),
@@ -8,25 +10,13 @@ public enum Role {
     RECRUIT("Recruit", "R", 0),
     NO_CLAN("No clan", "", -1);
 
-    private final String name;
-    private final String chatPrefix;
-    private final int permissionIndex;
+    @Getter private final String name;
+    @Getter private final String chatPrefix;
+    @Getter private final int permissionIndex;
 
     Role(String name, String chatPrefix, int permissionIndex) {
         this.name = name;
         this.chatPrefix = chatPrefix;
         this.permissionIndex = permissionIndex;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getChatPrefix() {
-        return chatPrefix;
-    }
-
-    public int getPermissionIndex() {
-        return permissionIndex;
     }
 }

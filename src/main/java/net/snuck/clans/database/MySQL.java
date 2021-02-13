@@ -1,9 +1,10 @@
 package net.snuck.clans.database;
 
+import lombok.Data;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+@Data
 public class MySQL implements IData {
 
     private final String host;
@@ -19,10 +20,6 @@ public class MySQL implements IData {
         this.user = user;
         this.password = password;
         this.database = database;
-    }
-
-    public Connection getConnection() {
-        return this.connection;
     }
 
     public void open() {
@@ -43,25 +40,5 @@ public class MySQL implements IData {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getDatabase() {
-        return database;
     }
 }

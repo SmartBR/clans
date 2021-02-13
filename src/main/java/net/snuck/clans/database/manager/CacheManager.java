@@ -18,7 +18,7 @@ public class CacheManager {
     public static void loadUsersCache() {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM users");
 
             ResultSet rs = st.executeQuery();
@@ -38,7 +38,7 @@ public class CacheManager {
     public static void loadClansCache() {
         PreparedStatement st;
         try {
-            Connection connection = Main.getiData().getConnection();
+            Connection connection = Main.getIData().getConnection();
             st = connection.prepareStatement("SELECT * FROM clans");
 
             ResultSet rs = st.executeQuery();

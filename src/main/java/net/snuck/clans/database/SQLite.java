@@ -1,19 +1,15 @@
 package net.snuck.clans.database;
 
+import lombok.Getter;
 import net.snuck.clans.Main;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class SQLite implements IData{
+public class SQLite implements IData {
 
-    private Connection connection;
-
-    public Connection getConnection() {
-        return this.connection;
-    }
+    @Getter private Connection connection;
 
     public void open() {
         String url = "";
