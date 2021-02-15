@@ -36,7 +36,6 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         init();
-
     }
 
     private void init() {

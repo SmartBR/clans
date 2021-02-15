@@ -1,6 +1,7 @@
 package net.snuck.clans.util;
 
 import net.snuck.clans.Main;
+import net.snuck.clans.api.event.ClanDeleteEvent;
 import net.snuck.clans.database.manager.CacheManager;
 import net.snuck.clans.database.manager.PlayerSQLManager;
 import net.snuck.clans.object.ClanPlayer;
@@ -24,6 +25,8 @@ public class ClanUtil {
             return;
         }
 
+        ClanDeleteEvent event = new ClanDeleteEvent(p, cp.getClan());
+        Bukkit.getPluginManager().callEvent(event);
         Main.getClanCache().remove(cp.getClanId());
         cp.getClan().delete();
 

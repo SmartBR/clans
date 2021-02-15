@@ -5,6 +5,9 @@ import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.snuck.clans.Main;
+import net.snuck.clans.api.event.ClanCreateEvent;
+import net.snuck.clans.api.event.ClanInviteCreateEvent;
+import net.snuck.clans.api.event.ClanMemberAddEvent;
 import net.snuck.clans.database.manager.*;
 import net.snuck.clans.gui.manager.ClanMenuManager;
 import net.snuck.clans.object.*;
@@ -13,8 +16,6 @@ import net.snuck.clans.util.ClanUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,6 +90,8 @@ public class ClanCommand {
             clan.save();
             cp.save();
 
+            ClanCreateEvent event = new ClanCreateEvent(p, clan);
+            Bukkit.getPluginManager().callEvent(event);
             p.sendMessage(String.format("§aSuccessfully created §f[%s] %s§a!", cp.getClan().getTag(), cp.getClan().getName()));
 
         } else {
@@ -137,6 +140,8 @@ public class ClanCommand {
         Invite invite = new Invite(targetCp, senderCp.getClan());
         invite.save();
 
+        ClanInviteCreateEvent event = new ClanInviteCreateEvent(p, senderCp.getClan(), invite);
+        Bukkit.getPluginManager().callEvent(event);
         p.sendMessage(String.format("§f%s §awas successfully invited to your clan!", target.getName()));
 
         target.sendMessage(String.format("§e* You have been invited to join the §f[%s] %s §eclan.", senderCp.getClan().getTag(), senderCp.getClan().getName()));
@@ -172,6 +177,8 @@ public class ClanCommand {
 
                 InviteSQLManager.removeInvite(p.getUniqueId().toString(), invited.getId());
 
+                ClanMemberAddEvent event = new ClanMemberAddEvent(p, cp, invited);
+                Bukkit.getPluginManager().callEvent(event);
                 p.sendMessage(String.format("§aSuccessfully joined in the §f[%s] %s §aclan.", invited.getTag(), invited.getName()));
 
                 for(ClanPlayer member : CacheManager.getPlayersFromClan(clanId)) {
