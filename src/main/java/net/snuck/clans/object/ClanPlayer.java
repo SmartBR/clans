@@ -1,12 +1,10 @@
 package net.snuck.clans.object;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.snuck.clans.Main;
 import net.snuck.clans.database.manager.InviteSQLManager;
 import net.snuck.clans.type.Role;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

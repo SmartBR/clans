@@ -23,9 +23,8 @@ public class MySQL implements IData {
     }
 
     public void open() {
-        String url = "";
         try {
-            url = "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDatabase();
+            String url = "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDatabase();
             connection = DriverManager.getConnection(url, getUser(), getPassword());
         } catch (SQLException e) {
             e.printStackTrace();
@@ -34,7 +33,7 @@ public class MySQL implements IData {
 
     public void close() {
         try {
-            if (this.connection != null && !(this.connection.isClosed())) {
+            if (this.connection != null && !this.connection.isClosed()) {
                 connection.close();
             }
         } catch (SQLException e) {

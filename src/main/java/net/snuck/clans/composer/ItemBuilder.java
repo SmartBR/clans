@@ -88,7 +88,6 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addGlow(boolean glow){
-        if (!glow) return this;
         compose(it -> it.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE,1));
         composeMeta(meta -> meta.addItemFlags(ItemFlag.HIDE_ENCHANTS));
         return this;

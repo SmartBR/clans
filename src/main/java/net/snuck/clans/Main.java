@@ -36,7 +36,6 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         init();
-
     }
 
     private void init() {
@@ -77,19 +76,13 @@ public final class Main extends JavaPlugin {
         String type = getConfig().getString("database.type");
 
         assert type != null;
-        if(type.equalsIgnoreCase("mysql")) {
-                String host = getConfig().getString("database.host");
-                int port = getConfig().getInt("database.port");
-                String user = getConfig().getString("database.user");
-                String password = getConfig().getString("database.password");
-                String database = getConfig().getString("database.database");
-
-                iData = new MySQL(host, port, user, password, database);
-        } else if(type.equalsIgnoreCase("sqlite")) {
-            iData = new SQLite();
-        }
-
-        iData.open();
+        (iData = type.equalsIgnoreCase("mysql") ? new MySQL(
+                getConfig().getString("database.host"),
+                getConfig().getInt("database.port"),
+                getConfig().getString("database.user"),
+                getConfig().getString("database.password"),
+                getConfig().getString("database.database")
+        ) : new SQLite()).open();
 
         PlayerSQLManager.createTable("users", "uuid varchar(36), clan_id varchar(36), role varchar(16)");
         PlayerSQLManager.createTable("clans", "id varchar(36), tag varchar(3), name varchar(16)");

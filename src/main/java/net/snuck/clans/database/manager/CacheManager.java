@@ -3,15 +3,13 @@ package net.snuck.clans.database.manager;
 import net.snuck.clans.Main;
 import net.snuck.clans.object.Clan;
 import net.snuck.clans.object.ClanPlayer;
-import net.snuck.clans.object.Invite;
 import net.snuck.clans.type.Role;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CacheManager {
 
@@ -29,7 +27,6 @@ public class CacheManager {
 
             st.close();
             rs.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,28 +46,17 @@ public class CacheManager {
 
             st.close();
             rs.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public static List<ClanPlayer> getPlayersFromClan(String clanId) {
-
-        List<ClanPlayer> list = new ArrayList<>();
-
-        Main.getPlayerCache().forEach((uuid, cp) -> {
-            if(cp.getClanId().equals(clanId)) {
-                list.add(cp);
-            }
-        });
-        return list;
+        return Main.getPlayerCache().values().stream().filter(clanPlayer -> clanPlayer.getClanId().equals(clanId)).collect(Collectors.toList());
     }
 
     public static void saveClansCache() {
-        Main.getClanCache().forEach((id, clan) -> {
-            clan.save();
-        });
+        Main.getClanCache().forEach((id, clan) -> clan.save());
     }
 
     public static void saveUsersCache() {
