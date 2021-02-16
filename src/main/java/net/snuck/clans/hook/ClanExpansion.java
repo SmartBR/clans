@@ -29,30 +29,22 @@ public class ClanExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String identifier) {
-
         ClanPlayer cp = PlayerSQLManager.getPlayer(player.getUniqueId().toString());
+        String noClan = "§7No clan";
 
-        if(identifier.equals("clanTag")) {
-            if(cp != null) {
-                if (cp.hasClan()) {
-                    return cp.getClan().getTag();
-                } else {
-                    return "";
-                }
-            }
+        if (cp == null || !cp.hasClan()) return noClan;
 
+        String result;
+        switch (identifier) {
+            case "clanTag":
+                result = cp.getClan().getTag();
+                break;
+            case "clanName":
+                result = cp.getClan().getName();
+                break;
+            default:
+                result = noClan;
         }
-
-        if(identifier.equals("clanName")) {
-            if(cp != null) {
-                if(cp.hasClan()) {
-                    return cp.getClan().getName();
-                } else {
-                    return "§7No clan";
-                }
-            }
-        }
-
-        return null;
+        return result;
     }
 }

@@ -6,7 +6,6 @@ import net.snuck.clans.type.Role;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-
 import java.util.UUID;
 
 public class PlayerUtil {
@@ -62,7 +61,6 @@ public class PlayerUtil {
             }
         } else if(cp.getRole() == Role.CAPTAIN) {
             if(member.getRole().getPermissionIndex() < cp.getRole().getPermissionIndex()) {
-
                 switch (member.getRole()) {
                     case RECRUIT: {
                         player.sendMessage("§cThis player is a recruit.");
@@ -88,18 +86,15 @@ public class PlayerUtil {
 
                 return;
             }
-
             player.sendMessage("§cYou can't demote this player.");
         }
     }
 
     public static void promote(Player player, ClanPlayer member) {
-
         ClanPlayer cp = Main.getPlayerCache().get(player.getUniqueId().toString());
         OfflinePlayer memberPlayer = Bukkit.getOfflinePlayer(UUID.fromString(member.getId()));
 
         if(cp.getRole() == Role.LEADER || cp.getRole() == Role.CAPTAIN) {
-
             if(cp.getRole().getPermissionIndex() < member.getRole().getPermissionIndex()) {
                 player.closeInventory();
                 player.sendMessage("§cThat player has a superior role.");

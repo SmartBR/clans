@@ -11,12 +11,10 @@ public class PlayerLeftListener implements Listener {
 
     @EventHandler
     public void on(PlayerQuitEvent e) {
-
         Player p = e.getPlayer();
         ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
 
         cp.save();
-
         Main.getPlayerCache().remove(p.getUniqueId().toString());
 
     }

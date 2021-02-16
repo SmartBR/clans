@@ -32,9 +32,6 @@ public class ClanCommand {
     public void handleCommand(Context<Player> ctx) {
         Player p = ctx.getSender();
         ClanPlayer clanPlayer = Main.getPlayerCache().get(p.getUniqueId().toString());
-
-
-
         ClanMenuManager.openMenu(p, clanPlayer.hasClan());
     }
 
@@ -49,15 +46,8 @@ public class ClanCommand {
         ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
 
         if(!ClanSQLManager.hasClanWithName(clanName) && !ClanSQLManager.hasClanWithTag(clanTag) && !cp.hasClan()) {
-
-            if(clanName.length() > 16) {
-                p.sendMessage("§cThe clan name is too long, the characters limit is 16.");
-                return;
-            }
-
-            if (clanTag.length() != 3) {
-                p.sendMessage("§cThe clan tag needs to be 3 characters long.");
-                return;
+            if (clanName.length() > 16 || clanTag.length() != 3) {
+                p.sendMessage(clanName.length() > 16 ? "§cThe clan name is too long, the characters limit is 16." : "§cThe clan tag needs to be 3 characters long.");
             }
 
             Pattern tagPattern = Pattern.compile("[^a-zA-Z0-9 ]", Pattern.CASE_INSENSITIVE);
@@ -93,7 +83,6 @@ public class ClanCommand {
             ClanCreateEvent event = new ClanCreateEvent(p, clan);
             Bukkit.getPluginManager().callEvent(event);
             p.sendMessage(String.format("§aSuccessfully created §f[%s] %s§a!", cp.getClan().getTag(), cp.getClan().getName()));
-
         } else {
             p.sendMessage("§cOops! Looks like you already have a clan.");
         }
@@ -165,37 +154,35 @@ public class ClanCommand {
         }
 
         Clan invited = ClanSQLManager.getClanByName(clanName);
-
-        if (invited != null) {
-            String clanId = invited.getId();
-            if(cp.hasInviteForClan(clanId)) {
-
-                cp.setClan(invited);
-                cp.setClanId(invited.getId());
-                cp.setRole(Role.RECRUIT);
-                cp.save();
-
-                InviteSQLManager.removeInvite(p.getUniqueId().toString(), invited.getId());
-
-                ClanMemberAddEvent event = new ClanMemberAddEvent(p, cp, invited);
-                Bukkit.getPluginManager().callEvent(event);
-                p.sendMessage(String.format("§aSuccessfully joined in the §f[%s] %s §aclan.", invited.getTag(), invited.getName()));
-
-                for(ClanPlayer member : CacheManager.getPlayersFromClan(clanId)) {
-                    Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
-
-                    if (memberPlayer != null) {
-                        memberPlayer.sendMessage(String.format("§f%s §ajoined in your clan.", p.getName()));
-                    }
-                }
-
-            } else {
-                p.sendMessage("§cYou wasn't invited to this clan.");
-            }
-        } else {
+        if (invited == null) {
             p.sendMessage("§cOops! Looks like this clan don't exists.");
+            return;
         }
 
+        String clanId = invited.getId();
+        if (!cp.hasInviteForClan(clanId)) {
+            p.sendMessage("§cYou wasn't invited to this clan.");
+            return;
+        }
+
+        cp.setClan(invited);
+        cp.setClanId(invited.getId());
+        cp.setRole(Role.RECRUIT);
+        cp.save();
+
+        InviteSQLManager.removeInvite(p.getUniqueId().toString(), invited.getId());
+
+        ClanMemberAddEvent event = new ClanMemberAddEvent(p, cp, invited);
+        Bukkit.getPluginManager().callEvent(event);
+        p.sendMessage(String.format("§aSuccessfully joined in the §f[%s] %s §aclan.", invited.getTag(), invited.getName()));
+
+        CacheManager.getPlayersFromClan(clanId).forEach(member -> {
+            Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
+
+            if (memberPlayer != null) {
+                memberPlayer.sendMessage(String.format("§f%s §ajoined in your clan.", p.getName()));
+            }
+        });
     }
 
     @Command(name = "clan.decline",
@@ -209,16 +196,18 @@ public class ClanCommand {
         ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
 
         Clan clan = ClanSQLManager.getClanByName(clanName);
-        if (clan != null) {
-            if(cp.hasInviteForClan(clan.getId())) {
-                InviteSQLManager.removeInvite(p.getUniqueId().toString(), clan.getId());
-                p.sendMessage(String.format("§cYou declined the invite from the clan §f[%s] %s§c.", clan.getTag(), clan.getName()));
-            } else {
-                p.sendMessage("§cYou don't have an invite for this clan.");
-            }
-        } else {
+        if (clan == null) {
             p.sendMessage("§cOops! Looks like this clan don't exists.");
+            return;
         }
+
+        if (!cp.hasInviteForClan(clan.getId())) {
+            p.sendMessage("§cYou don't have an invite for this clan.");
+            return;
+        }
+
+        InviteSQLManager.removeInvite(p.getUniqueId().toString(), clan.getId());
+        p.sendMessage(String.format("§cYou declined the invite from the clan §f[%s] %s§c.", clan.getTag(), clan.getName()));
     }
 
     @Command(name = "clan.delete",
@@ -255,14 +244,14 @@ public class ClanCommand {
     public void handleHelpCommand(Context<Player> ctx) {
         Player p = ctx.getSender();
 
-        p.sendMessage("§e/clan §f- shows the clan menu.");
-        p.sendMessage("§e/clan create <tag> <name> §f- creates a clan.");
-        p.sendMessage("§e/clan invite <player> §f- invites a player to your clan.");
-        p.sendMessage("§e/clan join <clan> §f- joins into a clan that you've been invited for.");
-        p.sendMessage("§e/clan decline <clan> §f- declines an invite of a clan.");
-        p.sendMessage("§e/clan leave §f- leaves from your current clan.");
-        p.sendMessage("§e/clan delete §f- deletes your clan, only for clan leaders.");
+        p.sendMessage(new String[] {
+                "§e/clan §f- shows the clan menu.",
+                "§e/clan create <tag> <name> §f- creates a clan.",
+                "§e/clan invite <player> §f- invites a player to your clan.",
+                "§e/clan join <clan> §f- joins into a clan that you've been invited for.",
+                "§e/clan decline <clan> §f- declines an invite of a clan.",
+                "§e/clan leave §f- leaves from your current clan.",
+                "§e/clan delete §f- deletes your clan, only for clan leaders."
+        });
     }
-
-
 }

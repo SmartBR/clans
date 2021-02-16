@@ -4,7 +4,6 @@ import net.snuck.clans.Main;
 import net.snuck.clans.object.Clan;
 import net.snuck.clans.object.ClanPlayer;
 import net.snuck.clans.type.Role;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +28,6 @@ public class PlayerSQLManager {
             st.close();
 
             return next;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

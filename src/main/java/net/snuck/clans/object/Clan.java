@@ -1,11 +1,9 @@
 package net.snuck.clans.object;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.snuck.clans.Main;
 import net.snuck.clans.database.manager.ClanSQLManager;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -36,18 +34,18 @@ public class Clan {
         try {
             if(!ClanSQLManager.hasClan(this.id)) {
                 ClanSQLManager.insertClan(this.id, this.tag, this.name);
-            } else {
-
-                Connection connection = Main.getIData().getConnection();
-                st = connection.prepareStatement("UPDATE clans SET id = ?, tag = ?, name = ? WHERE id = ?");
-                st.setString(1, this.id);
-                st.setString(2, this.tag);
-                st.setString(3, this.name);
-                st.setString(4, this.id);
-                st.executeUpdate();
-
-                st.close();
+                return;
             }
+
+            Connection connection = Main.getIData().getConnection();
+            st = connection.prepareStatement("UPDATE clans SET id = ?, tag = ?, name = ? WHERE id = ?");
+            st.setString(1, this.id);
+            st.setString(2, this.tag);
+            st.setString(3, this.name);
+            st.setString(4, this.id);
+            st.executeUpdate();
+
+            st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -35,7 +35,6 @@ public class ClanSQLManager {
             st.setString(3, name);
             st.executeUpdate();
             st.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -56,7 +55,6 @@ public class ClanSQLManager {
 
             st.close();
             rs.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,7 +76,6 @@ public class ClanSQLManager {
 
             st.close();
             rs.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -99,7 +96,6 @@ public class ClanSQLManager {
             st.close();
 
             return next;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -120,7 +116,6 @@ public class ClanSQLManager {
             st.close();
 
             return next;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -141,7 +136,6 @@ public class ClanSQLManager {
             st.close();
 
             return next;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

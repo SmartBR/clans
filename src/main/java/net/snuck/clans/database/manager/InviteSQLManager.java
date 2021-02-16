@@ -2,7 +2,6 @@ package net.snuck.clans.database.manager;
 
 import net.snuck.clans.Main;
 import net.snuck.clans.object.Invite;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,7 +54,6 @@ public class InviteSQLManager {
             rs.close();
 
             return result;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -54,7 +54,6 @@ public class ClanMenuManager {
 
     // TODO add elevated operations like kicking players here.
     public static void openElevatedMembersMenu(Player player) {
-
         ClanPlayer cp = Main.getPlayerCache().get(player.getUniqueId().toString());
 
         ChestGui gui = new ChestGui(6, String.format("[%s] %s - MEMBERS", cp.getClan().getTag(), cp.getClan().getName()));
@@ -62,33 +61,29 @@ public class ClanMenuManager {
 
         OutlinePane membersPane = new OutlinePane(1, 1, 4, 7, Pane.Priority.LOWEST);
 
-        for(ClanPlayer member : PlayerSQLManager.getAllPlayers(cp.getClanId())) {
-
+        PlayerSQLManager.getAllPlayers(cp.getClanId()).forEach(member -> {
             String playerId = member.getId();
-
             OfflinePlayer memberPlayer = Bukkit.getOfflinePlayer(UUID.fromString(playerId));
 
             ItemStack playerHead = new ItemBuilder(Material.PLAYER_HEAD)
                     .setName("§7" + memberPlayer.getName())
                     .setLore("§7Role: §f" + member.getRole().getName(), "", "§7Left-click: §fpromote player", "§7Right-click: §fdemote player")
                     .build();
+
             SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
             meta.setOwningPlayer(memberPlayer);
             playerHead.setItemMeta(meta);
 
             GuiItem headItem = new GuiItem(playerHead, (e) -> {
-
                 if(e.getClick() == ClickType.LEFT) {
                     // PlayerUtil class handle all conditional structures.
                     PlayerUtil.promote(player, member);
                 } else if(e.getClick() == ClickType.RIGHT) {
                     PlayerUtil.demote(player, member);
                 }
-
             });
-
             membersPane.addItem(headItem);
-        }
+        });
 
         gui.addPane(membersPane);
 
@@ -103,7 +98,6 @@ public class ClanMenuManager {
         }));
 
         gui.addPane(backPane);
-
         gui.show(player);
     }
 
@@ -115,8 +109,7 @@ public class ClanMenuManager {
 
         OutlinePane membersPane = new OutlinePane(1, 1, 4, 7, Pane.Priority.LOWEST);
 
-        for(ClanPlayer clanPlayer : PlayerSQLManager.getAllPlayers(cp.getClanId())) {
-
+        PlayerSQLManager.getAllPlayers(cp.getClanId()).forEach(clanPlayer -> {
             String playerId = clanPlayer.getId();
 
             OfflinePlayer clanPlayerBukkit = Bukkit.getOfflinePlayer(UUID.fromString(playerId));
@@ -130,7 +123,7 @@ public class ClanMenuManager {
             playerHead.setItemMeta(meta);
 
             membersPane.addItem(new GuiItem(playerHead));
-        }
+        });
 
         gui.addPane(membersPane);
 
@@ -145,95 +138,11 @@ public class ClanMenuManager {
         }));
 
         gui.addPane(backPane);
-
         gui.show(player);
     }
 
     public static void openMenu(Player player, boolean hasClan) {
-        if(hasClan) {
-
-            ClanPlayer cp = Main.getPlayerCache().get(player.getUniqueId().toString());
-
-            ChestGui gui = new ChestGui(5, String.format("[%s] %s", cp.getClan().getTag(), cp.getClan().getName()));
-            gui.setOnGlobalClick((e) -> e.setCancelled(true));
-
-            ItemStack clanInfo = new ItemBuilder(Material.WRITABLE_BOOK)
-                    .setName("§aClan information")
-                    .setLore("§7Tag: §f" + cp.getClan().getTag(),
-                            "§7Name: §f" + cp.getClan().getName(),
-                            "§7Members: §f" + CacheManager.getPlayersFromClan(cp.getClanId()).size())
-                    .build();
-
-            ItemStack elevatedMembersInfo = new ItemBuilder(Material.PLAYER_HEAD)
-                    .setName("§aMembers")
-                    .setLore("§7Manage the members in your clan here.")
-                    .build();
-            SkullMeta meta = (SkullMeta) elevatedMembersInfo.getItemMeta();
-            meta.setOwningPlayer(player);
-            elevatedMembersInfo.setItemMeta(meta);
-
-            ItemStack membersInfo = new ItemBuilder(Material.PLAYER_HEAD)
-                    .setName("§aMembers")
-                    .setLore("§7See the members in your clan here.")
-                    .build();
-            SkullMeta basicMeta = (SkullMeta) membersInfo.getItemMeta();
-            basicMeta.setOwningPlayer(player);
-            membersInfo.setItemMeta(basicMeta);
-
-            OutlinePane menu = new OutlinePane(1, 1, 2, 1);
-
-            GuiItem elevatedMembers = new GuiItem(elevatedMembersInfo, (e) -> {
-                openElevatedMembersMenu(player);
-            });
-            GuiItem members = new GuiItem(membersInfo, (e) -> {
-                openMembersMenu(player);
-            });
-
-            menu.addItem(new GuiItem(clanInfo));
-            menu.addItem(cp.getRole() == Role.LEADER || cp.getRole() == Role.CAPTAIN ? elevatedMembers : members);
-
-            gui.addPane(menu);
-
-            OutlinePane exitOrDisbandPane = new OutlinePane(1, 3, 1, 1);
-
-            ItemStack disbandStack = new ItemBuilder(Material.DARK_OAK_DOOR)
-                    .setName("§cDisband clan")
-                    .setLore("§7Click here to disband your clan.")
-                    .build();
-
-            ItemStack exitStack = new ItemBuilder(Material.DARK_OAK_DOOR)
-                    .setName("§cExit clan")
-                    .setLore("§7Click here to exit from your clan.")
-                    .build();
-
-            GuiItem disbandItem = new GuiItem(disbandStack, (e) -> {
-                player.closeInventory();
-                DISBAND_ASKER.addPlayer(player);
-            });
-
-            GuiItem exitItem = new GuiItem(exitStack, (e) -> {
-                player.closeInventory();
-                LEAVE_ASKER.addPlayer(player);
-            });
-
-            exitOrDisbandPane.addItem(cp.getRole().getPermissionIndex() == 3 ? disbandItem : exitItem);
-
-            gui.addPane(exitOrDisbandPane);
-
-            OutlinePane rankingPane = new OutlinePane(7, 1, 1, 1);
-
-            ItemStack rankingItem = new ItemBuilder(Material.GOLD_NUGGET)
-                    .setName("§6Clans ranking")
-                    .setLore("§7See the server ranking here.")
-                    .build();
-
-            rankingPane.addItem(new GuiItem(rankingItem));
-
-            gui.addPane(rankingPane);
-
-            gui.show(player);
-
-        } else {
+        if (!hasClan) {
             ChestGui noClanGui = new ChestGui(3, player.getName());
             noClanGui.setOnGlobalClick((e) -> e.setCancelled(true));
 
@@ -248,10 +157,89 @@ public class ClanMenuManager {
                 e.getWhoClicked().closeInventory();
                 player.sendMessage("§cYou can create a clan by typing §e/clan create <tag> <name>§c.");
             }));
+
             noClanGui.addPane(menu);
-
             noClanGui.show(player);
+            return;
         }
-    }
 
+        ClanPlayer cp = Main.getPlayerCache().get(player.getUniqueId().toString());
+        ChestGui gui = new ChestGui(5, String.format("[%s] %s", cp.getClan().getTag(), cp.getClan().getName()));
+        OutlinePane menu = new OutlinePane(1, 1, 2, 1);
+
+        gui.setOnGlobalClick((e) -> e.setCancelled(true));
+
+        ItemStack clanInfo = new ItemBuilder(Material.WRITABLE_BOOK)
+                .setName("§aClan information")
+                .setLore("§7Tag: §f" + cp.getClan().getTag(),
+                        "§7Name: §f" + cp.getClan().getName(),
+                        "§7Members: §f" + CacheManager.getPlayersFromClan(cp.getClanId()).size())
+                .build();
+
+        ItemStack elevatedMembersInfo = new ItemBuilder(Material.PLAYER_HEAD)
+                .setName("§aMembers")
+                .setLore("§7Manage the members in your clan here.")
+                .build();
+        SkullMeta meta = (SkullMeta) elevatedMembersInfo.getItemMeta();
+        meta.setOwningPlayer(player);
+        elevatedMembersInfo.setItemMeta(meta);
+
+        ItemStack membersInfo = new ItemBuilder(Material.PLAYER_HEAD)
+                .setName("§aMembers")
+                .setLore("§7See the members in your clan here.")
+                .build();
+        SkullMeta basicMeta = (SkullMeta) membersInfo.getItemMeta();
+        basicMeta.setOwningPlayer(player);
+        membersInfo.setItemMeta(basicMeta);
+
+        GuiItem elevatedMembers = new GuiItem(elevatedMembersInfo, (e) -> {
+            openElevatedMembersMenu(player);
+        });
+        GuiItem members = new GuiItem(membersInfo, (e) -> {
+            openMembersMenu(player);
+        });
+
+        menu.addItem(new GuiItem(clanInfo));
+        menu.addItem(cp.getRole() == Role.LEADER || cp.getRole() == Role.CAPTAIN ? elevatedMembers : members);
+
+        gui.addPane(menu);
+
+        OutlinePane exitOrDisbandPane = new OutlinePane(1, 3, 1, 1);
+
+        ItemStack disbandStack = new ItemBuilder(Material.DARK_OAK_DOOR)
+                .setName("§cDisband clan")
+                .setLore("§7Click here to disband your clan.")
+                .build();
+
+        ItemStack exitStack = new ItemBuilder(Material.DARK_OAK_DOOR)
+                .setName("§cExit clan")
+                .setLore("§7Click here to exit from your clan.")
+                .build();
+
+        GuiItem disbandItem = new GuiItem(disbandStack, (e) -> {
+            player.closeInventory();
+            DISBAND_ASKER.addPlayer(player);
+        });
+
+        GuiItem exitItem = new GuiItem(exitStack, (e) -> {
+            player.closeInventory();
+            LEAVE_ASKER.addPlayer(player);
+        });
+
+        exitOrDisbandPane.addItem(cp.getRole().getPermissionIndex() == 3 ? disbandItem : exitItem);
+
+        gui.addPane(exitOrDisbandPane);
+
+        OutlinePane rankingPane = new OutlinePane(7, 1, 1, 1);
+
+        ItemStack rankingItem = new ItemBuilder(Material.GOLD_NUGGET)
+                .setName("§6Clans ranking")
+                .setLore("§7See the server ranking here.")
+                .build();
+
+        rankingPane.addItem(new GuiItem(rankingItem));
+
+        gui.addPane(rankingPane);
+        gui.show(player);
+    }
 }

@@ -38,13 +38,13 @@ public class ClanChatCommand {
 
         String fullMessage = String.join(" ", message);
 
-        for(ClanPlayer member : CacheManager.getPlayersFromClan(cp.getClanId())) {
+        CacheManager.getPlayersFromClan(cp.getClanId()).forEach(member -> {
             Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
 
             if (memberPlayer != null) {
                 memberPlayer.sendMessage(String.format("§f[§a%s§f] %s: %s", cp.getRole().getChatPrefix(), p.getName(), fullMessage));
             }
-        }
+        });
 
     }
 
