@@ -13,6 +13,7 @@ import net.snuck.clans.gui.manager.ClanMenuManager;
 import net.snuck.clans.object.*;
 import net.snuck.clans.type.Role;
 import net.snuck.clans.util.ClanUtil;
+import net.snuck.clans.util.ConfigUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -47,7 +48,7 @@ public class ClanCommand {
 
         if(!ClanSQLManager.hasClanWithName(clanName) && !ClanSQLManager.hasClanWithTag(clanTag) && !cp.hasClan()) {
             if (clanName.length() > 16 || clanTag.length() != 3) {
-                p.sendMessage(clanName.length() > 16 ? "§cThe clan name is too long, the characters limit is 16." : "§cThe clan tag needs to be 3 characters long.");
+                p.sendMessage(clanName.length() > 16 ? ConfigUtil.getString("messages.clan-name.too-long") : ConfigUtil.getString("messages-clan-name.invalid-tag"));
             }
 
             Pattern tagPattern = Pattern.compile("[^a-zA-Z0-9 ]", Pattern.CASE_INSENSITIVE);
@@ -55,7 +56,7 @@ public class ClanCommand {
             boolean tagFound = m.find();
 
             if(tagFound) {
-                p.sendMessage("§cThe clan tag can't contain any special character.");
+                p.sendMessage(ConfigUtil.getString("messages.clan-name.special-characters-tag"));
                 return;
             }
 
@@ -64,7 +65,7 @@ public class ClanCommand {
             boolean nameFound = nameMatcher.find();
 
             if(nameFound) {
-                p.sendMessage("§cThe clan name can't contain any special character.");
+                p.sendMessage(ConfigUtil.getString("messages.clan-name.special-characters"));
                 return;
             }
 
@@ -82,9 +83,10 @@ public class ClanCommand {
 
             ClanCreateEvent event = new ClanCreateEvent(p, clan);
             Bukkit.getPluginManager().callEvent(event);
-            p.sendMessage(String.format("§aSuccessfully created §f[%s] %s§a!", cp.getClan().getTag(), cp.getClan().getName()));
+            p.sendMessage(ConfigUtil.getString("messages.actions.clan-created").replace("{tag}", cp.getClan().getTag()).replace("{name}", cp.getClan().getName()));
+
         } else {
-            p.sendMessage("§cOops! Looks like you already have a clan.");
+            p.sendMessage(ConfigUtil.getString("errors.general.already-have-a-clan"));
         }
     }
 
@@ -100,29 +102,34 @@ public class ClanCommand {
         ClanPlayer senderCp = Main.getPlayerCache().get(p.getUniqueId().toString());
 
         if(!senderCp.hasClan()) {
-            p.sendMessage("§cYou need to have a clan before execute this command. You can create a clan by typing §e/clan create <tag> <name>§c.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.dont-have-clan"));
             return;
         }
 
         if(!target.isOnline()) {
-            p.sendMessage("§cThis player is currently not online, try again later.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.target-offline"));
             return;
         }
 
         if(target == p) {
-            p.sendMessage("§cOops! You can't invite yourself.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.cannot-invite-yourself"));
             return;
         }
 
         ClanPlayer targetCp = Main.getPlayerCache().get(target.getUniqueId().toString());
 
+        if(targetCp.hasClan()) {
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.target-has-a-clan").replace("{target}", target.getName()));
+            return;
+        }
+
         if(targetCp.getClanId().equals(senderCp.getClanId())) {
-            p.sendMessage(String.format("§cOops! Looks like §f%s §cis already in your clan.", target.getName()));
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.already-in-same-clan").replace("{target}", target.getName()));
             return;
         }
 
         if(targetCp.hasInviteForClan(senderCp.getClanId())) {
-            p.sendMessage("§cThis player has already invited to join your clan, you can ask him to join.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.target-already-invited"));
             return;
         }
 
@@ -131,7 +138,7 @@ public class ClanCommand {
 
         ClanInviteCreateEvent event = new ClanInviteCreateEvent(p, senderCp.getClan(), invite);
         Bukkit.getPluginManager().callEvent(event);
-        p.sendMessage(String.format("§f%s §awas successfully invited to your clan!", target.getName()));
+        p.sendMessage(ConfigUtil.getString("messages.invite.target-invited").replace("{target}", target.getName()));
 
         target.sendMessage(String.format("§e* You have been invited to join the §f[%s] %s §eclan.", senderCp.getClan().getTag(), senderCp.getClan().getName()));
         target.sendMessage(String.format("§fTo join it, you can type: §e/clan join %s", senderCp.getClan().getName()));
@@ -149,19 +156,19 @@ public class ClanCommand {
         ClanPlayer cp = Main.getPlayerCache().get(p.getUniqueId().toString());
 
         if(cp.hasClan()) {
-            p.sendMessage("§cYou're already in a clan.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.general.already-have-a-clan"));
             return;
         }
 
         Clan invited = ClanSQLManager.getClanByName(clanName);
         if (invited == null) {
-            p.sendMessage("§cOops! Looks like this clan don't exists.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.general.clan-dont-exists"));
             return;
         }
 
         String clanId = invited.getId();
         if (!cp.hasInviteForClan(clanId)) {
-            p.sendMessage("§cYou wasn't invited to this clan.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.invite.was-not-invited"));
             return;
         }
 
@@ -174,13 +181,13 @@ public class ClanCommand {
 
         ClanMemberAddEvent event = new ClanMemberAddEvent(p, cp, invited);
         Bukkit.getPluginManager().callEvent(event);
-        p.sendMessage(String.format("§aSuccessfully joined in the §f[%s] %s §aclan.", invited.getTag(), invited.getName()));
+        p.sendMessage(ConfigUtil.getString("messages.errors.invite.sender-joined").replace("{tag}", invited.getTag()).replace("{name}", invited.getName()));
 
         CacheManager.getPlayersFromClan(clanId).forEach(member -> {
             Player memberPlayer = Bukkit.getPlayer(UUID.fromString(member.getId()));
 
             if (memberPlayer != null) {
-                memberPlayer.sendMessage(String.format("§f%s §ajoined in your clan.", p.getName()));
+                memberPlayer.sendMessage(ConfigUtil.getString("messages.errors.invite.members-someone-joined").replace("{member}", p.getName()));
             }
         });
     }
@@ -197,12 +204,12 @@ public class ClanCommand {
 
         Clan clan = ClanSQLManager.getClanByName(clanName);
         if (clan == null) {
-            p.sendMessage("§cOops! Looks like this clan don't exists.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.general.clan-dont-exists"));
             return;
         }
 
         if (!cp.hasInviteForClan(clan.getId())) {
-            p.sendMessage("§cYou don't have an invite for this clan.");
+            p.sendMessage(ConfigUtil.getString("messages.errors.general.was-not-invited"));
             return;
         }
 

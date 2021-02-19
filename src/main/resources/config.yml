@@ -5,3 +5,33 @@ database:
   database: 'server'
   user: 'root'
   password: ''
+
+messages:
+  clan-name:
+    too-long: "&cThe clan name is too long."
+    invalid-tag: "7cThe clan tag needs to be 3 characters long."
+    special-characters: "&cThe clan name can't contain any special character."
+    special-characters-tag: "&cThe clan tag can't contain any special character."
+  errors:
+    invite:
+      dont-have-clan: "&cYou need to own a clan before executing this command. You can create one by typing &e/clan create <tag> <name>&c."
+      target-offline: "&cThis player is currently offline."
+      cannot-invite-yourself: "&cOops! You can't invite yourself."
+      target-has-a-clan: "&cOops! Looks like &f{target} &calready have a clan."
+      target-already-invited: "&cOops! Looks like &f{target} &cis already invited to join your clan."
+      already-in-same-clan: "&cOops! Looks like &f{target} &cis already in your clan."
+      was-not-invited: "&cYou wasn't invited to this clan."
+      invited-successfully: "&aYou invited &f{target}&a."
+      sender-joined: "&aSuccessfuly joined &f[{tag}] {name}&a!"
+      members-someone-joined: "&f{member} &ajoined your clan."
+      declined: "&cYou declined the invite from the clan &f[{tag}] {name}&c."
+    general:
+      already-have-a-clan: "&cOops! Looks like you already have a clan."
+      clan-dont-exists: "&cOops! Looks like this clan don't exists."
+  invite:
+    sender:
+      target-invited: "&f{target} &asuccessfully invited to your clan."
+
+
+  actions:
+    clan-created: "&aSuccessfully created &f[{tag}] {name}&a!"
