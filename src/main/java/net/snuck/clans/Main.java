@@ -7,6 +7,7 @@ import net.snuck.clans.command.ClanChatCommand;
 import net.snuck.clans.command.ClanCommand;
 import net.snuck.clans.database.*;
 import net.snuck.clans.database.manager.*;
+import net.snuck.clans.event.ClanDeleteListener;
 import net.snuck.clans.event.PlayerDamageListener;
 import net.snuck.clans.event.PlayerJoinListener;
 import net.snuck.clans.event.PlayerLeftListener;
@@ -70,6 +71,7 @@ public final class Main extends JavaPlugin {
         pm.registerEvents(new PlayerJoinListener(), getPlugin());
         pm.registerEvents(new PlayerLeftListener(), getPlugin());
         pm.registerEvents(new PlayerDamageListener(), getPlugin());
+        pm.registerEvents(new ClanDeleteListener(), getPlugin());
     }
 
     private void setupDatabase() {

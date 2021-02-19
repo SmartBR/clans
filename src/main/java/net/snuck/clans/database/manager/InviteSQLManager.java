@@ -24,6 +24,19 @@ public class InviteSQLManager {
         }
     }
 
+    public static void removeInviteWithClanId(String clanId) {
+        PreparedStatement st;
+        try {
+            Connection connection = Main.getIData().getConnection();
+            st = connection.prepareStatement("DELETE FROM invites WHERE clan_id = ?");
+            st.setString(1, clanId);
+            st.executeUpdate();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void removeInvite(String playerId, String clanId) {
         PreparedStatement st;
         try {
